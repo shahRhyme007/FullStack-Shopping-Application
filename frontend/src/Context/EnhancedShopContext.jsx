@@ -76,22 +76,14 @@ const ShopContextProvider = (props) => {
             setLoading(true);
             setError(null);
             
-            // Helper function to fix image URLs
-            const fixImageURLs = (products) => {
-                return products.map(product => ({
-                    ...product,
-                    image: `http://localhost:4000/images/product_${product.id}.png`
-                }));
-            };
-            
             // Try enhanced API first
             let data = await makeAPICall('/allproducts');
             
             if (data && Array.isArray(data) && data.length > 0) {
-                const fixedProducts = fixImageURLs(data);
-                setAllProduct(fixedProducts);
+                setAllProduct(data);
                 setIsApiOnline(true);
-                console.log(`✅ API Online: Loaded ${fixedProducts.length} products with fixed image URLs`);
+                console.log(`✅ API Online: Loaded ${data.length} products`);
+                console.log('🔍 Sample product:', data[data.length - 1]); // Log the last product
                 return;
             }
             
@@ -100,10 +92,9 @@ const ShopContextProvider = (props) => {
             if (response.ok) {
                 const originalData = await response.json();
                 if (Array.isArray(originalData) && originalData.length > 0) {
-                    const fixedProducts = fixImageURLs(originalData);
-                    setAllProduct(fixedProducts);
+                    setAllProduct(originalData);
                     setIsApiOnline(true);
-                    console.log(`✅ API Online: Loaded ${fixedProducts.length} products via fallback with fixed image URLs`);
+                    console.log(`✅ API Online: Loaded ${originalData.length} products via fallback`);
                     return;
                 }
             }
